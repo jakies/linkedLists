@@ -24,7 +24,7 @@ void insertRight(Node **head, Node *left, Node *insert);
 void insertIndex(Node **head, Node *insert, int index);
 
 // Node Delete
-void deleteNode(Node **head, Node *node);
+void deleteNode(Node **head, Node **node);
 void deleteIndex(Node **head, int index);
 void deleteValue(Node **head, int value);
 
@@ -37,8 +37,8 @@ void printNodes(char *title, Node **head);
 void updateIndexes(Node **head);
 
 int main() {
-
-	int listLength = 3;
+	
+    int listLength = 3;
 	Node *link_a = link(111);
 	Node *link_b = link(222);
 	Node *link_c = link(200);
@@ -161,57 +161,58 @@ Node *findIndex(Node **head, int index) {
 
 //
 void deleteIndex(Node **head, int index) {
-	deleteNode(head, findIndex(head, index));
+    Node *node = findIndex(head, index);
+	deleteNode(head, &node);
 }
 
 //
 void deleteValue(Node **head, int value) {
     Node *node = findValue(head, value);
 	while( node ) {
-	    deleteNode(head, node);
+	    deleteNode(head, &node);
         node = findValue(head, value);
 	}
 }
 
 //
-void deleteNode(Node **head, Node *node) {
+void deleteNode(Node **head, Node **node) {
 	Node *left, *right;
     
     // Invalid node
-	if(!node) {
+	if(!(*node)) {
 		return;
 	}
 
 	// Only head
-	if(node == *head && !(*head)->next) {
+	if(*node == *head && !(*head)->next) {
 		free(*head);
 		return;
 	}
 
 	// Removing head
-	if(node == *head) {
+	if(*node == *head) {
 		right = (*head)->next;
 		right->prev = NULL;
         *head = right;
-		free(*head);
+		free(*node);
 		updateIndexes(head);
 		return;
 	}
 
 	// Removing tail 
-	if(!node->next) {
-		left = node->prev;
+	if(!(*node)->next) {
+		left = (*node)->prev;
 		left->next = NULL;
-		//free(node);
+		free(*node);
 		return;
 	}
 
 	// Remove body section
-    left = node->prev;
-    right = node->next;
+    left = (*node)->prev;
+    right = (*node)->next;
 	left->next = right;
 	right->prev = left;
-	//free(node); // << --- Uncomment this line and hell breaks loose....
+	free(*node); // << --- Uncomment this line and hell breaks loose....
 	updateIndexes(head);
 }
 
